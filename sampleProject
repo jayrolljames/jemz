@@ -1,1 +1,93 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cool Project | Welcome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+        }
+        .header {
+            background-color: #0073e6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .hero {
+            background-image: url('https://via.placeholder.com/1920x600');
+            background-size: cover;
+            height: 600px;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin: 0;
+        }
+        .content {
+            padding: 50px;
+            text-align: center;
+        }
+        .content h2 {
+            font-size: 36px;
+            color: #0073e6;
+        }
+        .content p {
+            font-size: 18px;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+        .cta-button {
+            background-color: #0073e6;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Welcome to Cool Project</h1>
+        <p>Your go-to solution for modern innovations</p>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Building the Future, One Line of Code at a Time</h1>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content">
+        <h2>Why Choose Cool Project?</h2>
+        <p>Cool Project provides cutting-edge technology solutions to help you stay ahead of the competition. Our team of experts is dedicated to creating seamless and efficient applications tailored to your business needs.</p>
+        <p>From web development to data science, Cool Project covers it all. Our goal is to simplify your workflows and enhance productivity.</p>
+        <a href="#" class="cta-button">Get Started</a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 Cool Project. All rights reserved.</p>
+    </div>
+
+</body>
+</html>
