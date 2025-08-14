@@ -4,83 +4,200 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Command Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
     /* ---------- Reset & Base ---------- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: 'Orbitron', monospace;
       background: #0b0c1b;
       color: #00eaff;
+      scroll-behavior: smooth;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ---------- Navbar ---------- */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(11,12,27,0.85);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    nav .logo { font-size: 1.5rem; font-weight: bold; }
+    nav ul { list-style: none; display: flex; gap: 1.5rem; }
+    nav ul li { cursor: pointer; transition: 0.3s; }
+    nav ul li:hover { color: #ff007f; }
+
+    /* ---------- Header ---------- */
+    header {
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      overflow: hidden;
+      text-align: center;
+      background: linear-gradient(135deg, #0b0c1b 0%, #1a1c36 100%);
       flex-direction: column;
+      padding: 0 1rem;
     }
-
-    /* ---------- Command Center Header ---------- */
-    .header {
-      font-size: 3rem;
-      position: relative;
+    .header-title {
+      font-size: 4rem;
       color: #00eaff;
+      position: relative;
       text-transform: uppercase;
       letter-spacing: 2px;
       animation: flicker 2s infinite;
     }
+    .typed-text::after { content: '|'; animation: blink 0.7s infinite; }
 
-    /* Typing effect container */
-    .typed-text::after {
-      content: '|';
-      animation: blink 0.7s infinite;
-    }
-
-    /* ---------- Glitch Effect ---------- */
+    /* ---------- Keyframes ---------- */
     @keyframes flicker {
-      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-        text-shadow: 0 0 2px #00eaff, 0 0 5px #ff007f;
-      }
-      20%, 22%, 24%, 55% {
-        text-shadow: 0 0 20px #00eaff, 0 0 30px #ff007f;
-      }
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { text-shadow: 0 0 2px #00eaff, 0 0 5px #ff007f; }
+      20%, 22%, 24%, 55% { text-shadow: 0 0 20px #00eaff, 0 0 30px #ff007f; }
     }
+    @keyframes blink { 0%, 50%, 100% { opacity:1; } 25%,75% { opacity:0; } }
 
-    /* Typing Blink */
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0; }
+    /* ---------- Dashboard Panels ---------- */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding: 3rem 2rem;
     }
+    .panel {
+      background: rgba(18,24,48,0.6);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #00eaff40, 0 0 20px #ff007f20;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .panel:hover { transform: translateY(-5px); box-shadow: 0 0 20px #00eaff80, 0 0 40px #ff007f40; }
+    .panel h3 { margin-bottom: 0.5rem; color: #ff007f; }
+    .panel p { font-size: 0.9rem; line-height: 1.4; }
 
-    /* ---------- Layout ---------- */
-    .container {
+    /* ---------- Sections ---------- */
+    section {
+      padding: 4rem 2rem;
       text-align: center;
-      padding: 1rem;
-      max-width: 1200px;
-      width: 90%;
+    }
+    section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      color: #00eaff;
+      text-transform: uppercase;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    .feature-box {
+      background: rgba(18,24,48,0.6);
+      padding: 1.5rem;
+      border-radius: 12px;
+      transition: transform 0.3s;
+    }
+    .feature-box:hover { transform: translateY(-5px); }
+    .feature-box h4 { margin-bottom: 0.5rem; color: #ff007f; }
+
+    /* ---------- Footer ---------- */
+    footer {
+      background: #0b0c1b;
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid #00eaff20;
+      font-size: 0.9rem;
+      color: #888;
     }
 
     /* ---------- Responsive ---------- */
-    @media (max-width: 768px) {
-      .header { font-size: 2rem; }
-    }
-    @media (max-width: 480px) {
-      .header { font-size: 1.5rem; }
-    }
+    @media(max-width:768px){ .header-title{ font-size:3rem; } }
+    @media(max-width:480px){ .header-title{ font-size:2rem; } nav ul { flex-direction: column; gap:1rem; } }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="header typed-text" id="commandCenter"></h1>
-  </div>
 
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">CC</div>
+    <ul>
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Header / Hero -->
+  <header>
+    <h1 class="header-title typed-text" id="commandCenter"></h1>
+    <p>Advanced Analytics & Software Application Dashboard</p>
+  </header>
+
+  <!-- Dashboard Panels -->
+  <section id="dashboard" class="dashboard">
+    <div class="panel">
+      <h3>Users Online</h3>
+      <p>Real-time analytics of active users and interactions.</p>
+    </div>
+    <div class="panel">
+      <h3>Server Load</h3>
+      <p>Monitor server performance, CPU & memory usage, instantly.</p>
+    </div>
+    <div class="panel">
+      <h3>Sales Reports</h3>
+      <p>Daily and monthly sales reports with predictive insights.</p>
+    </div>
+    <div class="panel">
+      <h3>Alerts</h3>
+      <p>System alerts and notifications for potential issues.</p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <h2>Features</h2>
+    <div class="features">
+      <div class="feature-box">
+        <h4>Real-Time Analytics</h4>
+        <p>Track your data as it happens, with live updates and insights.</p>
+      </div>
+      <div class="feature-box">
+        <h4>Custom Dashboards</h4>
+        <p>Create dashboards that fit your workflow and analytics needs.</p>
+      </div>
+      <div class="feature-box">
+        <h4>Data Security</h4>
+        <p>End-to-end encryption and secure storage for all sensitive data.</p>
+      </div>
+      <div class="feature-box">
+        <h4>Cross-Platform</h4>
+        <p>Access the dashboard from desktop, tablet, and mobile devices.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>Email us at <a href="mailto:contact@commandcenter.com">contact@commandcenter.com</a> for more info.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Command Center. All rights reserved.
+  </footer>
+
+  <!-- Typing Effect Script -->
   <script>
-    // ---------- Typing Effect ----------
     const text = "COMMAND CENTER";
-    const speed = 150; // typing speed
+    const speed = 150;
     let i = 0;
-
     function typeWriter() {
-      if (i < text.length) {
+      if(i < text.length){
         document.getElementById("commandCenter").innerHTML += text.charAt(i);
         i++;
         setTimeout(typeWriter, speed);
@@ -88,5 +205,6 @@
     }
     window.onload = typeWriter;
   </script>
+
 </body>
 </html>
