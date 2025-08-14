@@ -1,260 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Command Center</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&family=Roboto:wght@400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-/* ---------- Base ---------- */
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-  font-family:'Roboto', sans-serif;
-  background:#0b0c1b;
-  color:#00eaff;
-  overflow-x:hidden;
-}
-a{color:inherit;text-decoration:none;}
-ul{list-style:none;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analytics & Applications</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-2: #121933;
+      --card: #151b36cc;
+      --text: #e7ecff;
+      --muted: #a7b0d6;
+      --accent: #6ea8ff;
+      --accent-2: #8a7dff;
+      --success: #3ad29f;
+      --warning: #ffc857;
+      --danger: #ff6b6b;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
 
-/* ---------- Navbar ---------- */
-nav{
-  position:fixed;
-  top:0;
-  width:100%;
-  background:rgba(38,0,74,0.9);
-  padding:1rem 2rem;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  z-index:1000;
-  font-family:'Rajdhani', sans-serif;
-}
-nav .logo{font-size:1.5rem;font-weight:bold;color:#ff007f;}
-nav ul{display:flex;gap:2rem;}
-nav ul li{cursor:pointer;transition:.3s;}
-nav ul li:hover{color:#00eaff;}
+    /* Reset + layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 80% -10%, #1e2760 0%, transparent 60%),
+                  radial-gradient(800px 400px at 10% 10%, #212b64 0%, transparent 55%),
+                  linear-gradient(160deg, var(--bg), var(--bg-2));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.4;
+      overflow-x: hidden;
+    }
 
-/* ---------- Header ---------- */
-header{
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  flex-direction:column;
-  position:relative;
-  overflow:hidden;
-}
-.header-title{
-  font-family:'Rajdhani', sans-serif;
-  font-size:4rem;
-  color:#26004a;
-  text-transform:uppercase;
-  letter-spacing:2px;
-  animation:flicker 2s infinite;
-}
-.typed-text::after{content:'|';animation:blink .7s infinite;}
-header p{margin-top:1rem;color:#888;font-size:1.2rem;}
+    .noise { /* subtle animated grain */
+      position: fixed; inset: 0; pointer-events: none; opacity: .06; mix-blend-mode: soft-light;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)"/></svg>');
+      animation: grain 7s steps(6) infinite;
+    }
+    @keyframes grain { from { transform: translate(0,0) } 25% { transform: translate(-10%, 6%) } 50% { transform: translate(6%, -8%) } 75% { transform: translate(-4%, 2%) } to { transform: translate(0,0) } }
 
-/* ---------- Dashboard Background Animation ---------- */
-.background-grid{
-  position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(0deg, rgba(38,0,74,0.05) 1px, transparent 1px) 0 0,
-            linear-gradient(90deg, rgba(255,0,127,0.05) 1px, transparent 1px) 0 0;
-  background-size:50px 50px;
-  z-index:0;
-  animation: moveGrid 20s linear infinite;
-}
-@keyframes moveGrid{0%{background-position:0 0;}100%{background-position:500px 500px;}}
+    header {
+      position: relative;
+      padding: 56px 24px 24px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #26307a, #1a2260);
+      padding: 8px 14px; border-radius: 999px; color: var(--muted);
+      border: 1px solid #2d3880; box-shadow: var(--shadow);
+    }
+    .pulse { width: 9px; height: 9px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 0 rgba(58,210,159,.7); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(58,210,159,.7) } 70% { box-shadow: 0 0 0 16px rgba(58,210,159,0) } 100% { box-shadow: 0 0 0 0 rgba(58,210,159,0) } }
 
-/* ---------- Panels ---------- */
-.dashboard{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:1.5rem;
-  padding:6rem 2rem 3rem 2rem;
-  position:relative;
-  z-index:1;
-}
-.panel{
-  background:rgba(38,0,74,0.7);
-  padding:2rem;
-  border-radius:12px;
-  box-shadow:0 0 15px #26004a40,0 0 30px #ff007f20;
-  transition:.3s;
-}
-.panel:hover{
-  transform:translateY(-5px);
-  box-shadow:0 0 25px #26004a80,0 0 50px #ff007f40;
-}
-.panel h3{margin-bottom:1rem;color:#ff007f;}
-.panel canvas{margin-top:1rem;}
+    h1 {
+      font-size: clamp(32px, 6vw, 58px);
+      margin: 18px 0 8px; letter-spacing: .4px;
+    }
+    .subtitle { color: var(--muted); font-size: clamp(14px, 2.2vw, 18px); max-width: 64ch }
 
-/* ---------- Sections ---------- */
-section{padding:4rem 2rem;text-align:center;}
-section h2{
-  font-family:'Rajdhani', sans-serif;
-  font-size:2.5rem;
-  margin-bottom:2rem;
-  color:#26004a;
-  text-transform:uppercase;
-}
-.features{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:2rem;
-}
-.feature-box{
-  background:rgba(38,0,74,0.7);
-  padding:1.5rem;
-  border-radius:12px;
-  transition:.3s;
-}
-.feature-box:hover{transform:translateY(-5px);}
-.feature-box h4{margin-bottom:.5rem;color:#ff007f;}
+    .cta {
+      display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap;
+    }
+    .btn {
+      appearance: none; border: 0; cursor: pointer; border-radius: 14px; padding: 12px 16px; font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #0d1226; box-shadow: var(--shadow);
+      transition: transform .2s ease, filter .2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .btn.outline { background: transparent; color: var(--text); border: 1px solid #2d3880 }
 
-/* ---------- Footer ---------- */
-footer{
-  background:#0b0c1b;
-  text-align:center;
-  padding:2rem;
-  border-top:1px solid #26004a20;
-  font-size:.9rem;
-  color:#888;
-}
+    .orbital {
+      position: absolute; right: 2%; top: -40px; width: 220px; height: 220px; filter: drop-shadow(0 20px 60px rgba(0,0,0,.35));
+    }
+    .orbital .planet { fill: url(#g); }
+    .orbital .ring { stroke: #6ea8ff66; stroke-width: 1.5; fill: none; }
+    .orbital .dot { fill: var(--accent); }
+    .spin { animation: spin 16s linear infinite; transform-origin: 50% 50%; }
+    @keyframes spin { to { transform: rotate(360deg) } }
 
-/* ---------- Keyframes ---------- */
-@keyframes flicker{
-  0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 2px #26004a,0 0 5px #ff007f;}
-  20%,22%,24%,55%{text-shadow:0 0 20px #26004a,0 0 30px #ff007f;}
-}
-@keyframes blink{0%,50%,100%{opacity:1;}25%,75%{opacity:0;}}
+    main { max-width: 1200px; margin: 24px auto 80px; padding: 0 24px; }
 
-/* ---------- Responsive ---------- */
-@media(max-width:768px){.header-title{font-size:3rem;}}
-@media(max-width:480px){.header-title{font-size:2rem;}nav ul{flex-direction:column;gap:1rem;}}
-</style>
+    .grid {
+      display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; align-items: stretch;
+    }
+
+    .card {
+      grid-column: span 12; background: radial-gradient(120% 100% at 100% 0%, rgba(110,168,255,.14), transparent 60%),
+                                  linear-gradient(180deg, var(--card), rgba(21,27,54,.72));
+      border: 1px solid #263070; border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .card h3 { margin: 0 0 10px; font-size: 18px; color: var(--text) }
+    .card p { margin: 0; color: var(--muted) }
+
+    /* responsive sizing */
+    @media (min-width: 780px) {
+      .span-7 { grid-column: span 7; }
+      .span-5 { grid-column: span 5; }
+      .span-4 { grid-column: span 4; }
+      .span-3 { grid-column: span 3; }
+    }
+
+    /* Stat counters */
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+    .stat { background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 60%); border: 1px solid #2c366f; border-radius: 14px; padding: 14px; }
+    .stat .label { color: var(--muted); font-size: 12px; }
+    .stat .value { font-size: 26px; font-weight: 800; letter-spacing: .5px; }
+
+    /* Mini KPI bars */
+    .kpi { height: 10px; background: #1a2147; border-radius: 999px; overflow: hidden; border: 1px solid #2b3570; margin-top: 8px; }
+    .kpi > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--success), var(--accent)); border-radius: inherit; animation: grow 1.6s cubic-bezier(.16,1,.3,1) forwards; }
+    @keyframes grow { from { width: 0% } to { width: var(--to, 72%) } }
+
+    /* App tiles */
+    .apps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 10px; }
+    .app {
+      border: 1px solid #2b3570; border-radius: 14px; padding: 14px; background: #0e1533b3; backdrop-filter: blur(6px);
+      transform: translateY(0); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .app:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,.35); border-color: #3b4892; }
+    .app .name { font-weight: 700; margin-bottom: 6px; }
+    .app .desc { color: var(--muted); font-size: 13px }
+
+    /* Footer */
+    footer { color: #9aa6db; text-align: center; padding: 40px 24px; opacity: .8 }
+    footer a { color: var(--text); text-decoration: none; border-bottom: 1px dashed #334087 }
+
+    /* floating accents */
+    .floaty {
+      position: fixed; pointer-events: none; inset: auto auto 10% 5%; width: 200px; height: 200px; filter: blur(42px) saturate(1.8) opacity(.8);
+      background: conic-gradient(from 0deg, #4b63ff, #0fd, #4b63ff);
+      animation: swirl 22s linear infinite;
+    }
+    .floaty.two { left: auto; right: 10%; bottom: 30%; width: 160px; height: 160px; animation-duration: 28s; opacity: .6 }
+    @keyframes swirl { to { transform: rotate(360deg) } }
+  </style>
 </head>
 <body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="floaty" aria-hidden="true"></div>
+  <div class="floaty two" aria-hidden="true"></div>
 
-<!-- Navbar -->
-<nav>
-  <div class="logo">CC</div>
-  <ul>
-    <li><a href="#dashboard">Dashboard</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
-
-<!-- Header -->
-<header>
-  <div class="background-grid"></div>
-  <h1 class="header-title typed-text" id="commandCenter"></h1>
-  <p>Advanced Analytics & Software Dashboard</p>
-</header>
-
-<!-- Dashboard Panels -->
-<section id="dashboard" class="dashboard">
-  <div class="panel">
-    <h3>Users Online</h3>
-    <canvas id="usersChart" height="150"></canvas>
-  </div>
-  <div class="panel">
-    <h3>Server Load</h3>
-    <canvas id="serverChart" height="150"></canvas>
-  </div>
-  <div class="panel">
-    <h3>Sales Reports</h3>
-    <canvas id="salesChart" height="150"></canvas>
-  </div>
-  <div class="panel">
-    <h3>Alerts</h3>
-    <canvas id="alertsChart" height="150"></canvas>
-  </div>
-</section>
-
-<!-- Features -->
-<section id="features">
-  <h2>Features</h2>
-  <div class="features">
-    <div class="feature-box">
-      <h4>Real-Time Analytics</h4>
-      <p>Track your data live with instant insights and updates.</p>
+  <header>
+    <span class="badge"><span class="pulse"></span> Live analytics synced</span>
+    <h1>Analytics & Applications</h1>
+    <p class="subtitle">Beautiful, live-updating dashboards and modular applications to turn raw data into decisive action. Explore KPIs, drill into trends, and launch tools—all in one sleek interface.</p>
+    <div class="cta">
+      <a class="btn" href="#dashboard" rel="noopener">View Dashboard</a>
+      <a class="btn outline" href="#apps" rel="noopener">Open Applications</a>
     </div>
-    <div class="feature-box">
-      <h4>Custom Dashboards</h4>
-      <p>Create dashboards that fit your workflow and needs.</p>
+
+    <!-- Decorative orbital graphic -->
+    <svg class="orbital" viewBox="0 0 220 220" aria-hidden="true">
+      <defs>
+        <radialGradient id="g" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#6ea8ff"/>
+          <stop offset="100%" stop-color="#8a7dff"/>
+        </radialGradient>
+      </defs>
+      <g class="spin">
+        <circle class="planet" cx="110" cy="110" r="34"/>
+        <circle class="ring" cx="110" cy="110" r="64"/>
+        <circle class="ring" cx="110" cy="110" r="94"/>
+        <circle class="dot" cx="110" cy="16" r="4"/>
+      </g>
+    </svg>
+  </header>
+
+  <main id="dashboard">
+    <div class="grid">
+      <!-- Big line chart -->
+      <section class="card span-7">
+        <h3>Traffic & Conversions (Live)</h3>
+        <canvas id="lineChart" height="220" style="width:100%"></canvas>
+        <p style="margin-top:10px">Realtime view of sessions, signups, and conversion rate. Hover to inspect values.</p>
+      </section>
+
+      <!-- Stat counters & mini bars -->
+      <section class="card span-5">
+        <h3>Key Metrics</h3>
+        <div class="stats" id="stats">
+          <div class="stat"><div class="label">Daily Sessions</div><div class="value" data-target="48215">0</div><div class="kpi" style="--to: 82%"><i></i></div></div>
+          <div class="stat"><div class="label">New Users</div><div class="value" data-target="12980">0</div><div class="kpi" style="--to: 64%"><i></i></div></div>
+          <div class="stat"><div class="label">Signups</div><div class="value" data-target="3920">0</div><div class="kpi" style="--to: 54%"><i></i></div></div>
+          <div class="stat"><div class="label">Conv. Rate</div><div class="value" data-target="4.8" data-suffix="%">0</div><div class="kpi" style="--to: 74%"><i></i></div></div>
+        </div>
+      </section>
+
+      <!-- Bar chart -->
+      <section class="card span-4">
+        <h3>Top Channels</h3>
+        <canvas id="barChart" height="210" style="width:100%"></canvas>
+      </section>
+
+      <!-- App launcher -->
+      <section class="card span-8" id="apps">
+        <h3>Applications</h3>
+        <div class="apps">
+          <div class="app">
+            <div class="name">Cohort Explorer</div>
+            <div class="desc">Segment users by signup week and analyze retention curves.</div>
+          </div>
+          <div class="app">
+            <div class="name">Attribution Studio</div>
+            <div class="desc">Multi-touch attribution with model comparison & lift analysis.</div>
+          </div>
+          <div class="app">
+            <div class="name">Forecast Lab</div>
+            <div class="desc">ARIMA-like smoothing for demand & traffic predictions.</div>
+          </div>
+          <div class="app">
+            <div class="name">A/B Optimizer</div>
+            <div class="desc">Bayesian tests with stopping rules and power analysis.</div>
+          </div>
+          <div class="app">
+            <div class="name">Data Quality Monitor</div>
+            <div class="desc">Schema drift alerts, missingness heatmaps, anomaly flags.</div>
+          </div>
+          <div class="app">
+            <div class="name">ETL Orchestrator</div>
+            <div class="desc">Drag-and-drop pipelines with retry logic & lineage.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity feed -->
+      <section class="card span-12">
+        <h3>Activity</h3>
+        <div id="feed" style="display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px"></div>
+      </section>
     </div>
-    <div class="feature-box">
-      <h4>Data Security</h4>
-      <p>End-to-end encryption and secure data storage.</p>
-    </div>
-    <div class="feature-box">
-      <h4>Cross-Platform</h4>
-      <p>Access the dashboard from desktop, tablet, and mobile.</p>
-    </div>
-  </div>
-</section>
+  </main>
 
-<!-- Contact -->
-<section id="contact">
-  <h2>Contact</h2>
-  <p>Email us at <a href="mailto:contact@commandcenter.com">contact@commandcenter.com</a></p>
-</section>
+  <footer>
+    Built for demo purposes. Replace with your data sources or wire to your API.
+  </footer>
 
-<!-- Footer -->
-<footer>&copy; 2025 Command Center. All rights reserved.</footer>
+  <script>
+    // Utility: number formatter
+    const fmt = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
 
-<!-- Typing Effect -->
-<script>
-const text = "COMMAND CENTER";
-const speed = 150;
-let i = 0;
-function typeWriter(){
-  if(i < text.length){
-    document.getElementById("commandCenter").innerHTML += text.charAt(i);
-    i++;
-    setTimeout(typeWriter,speed);
-  }
-}
-window.onload = typeWriter;
-</script>
+    // Animated counters
+    function animateCounter(el) {
+      const target = parseFloat(el.dataset.target);
+      const isPercent = el.dataset.suffix === '%';
+      const duration = 1400; const start = performance.now();
+      function tick(t) {
+        const p = Math.min(1, (t - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = target * eased;
+        el.textContent = isPercent ? fmt.format(val) + '%' : fmt.format(Math.round(val));
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
 
-<!-- Chart.js Example -->
-<script>
-const chartColors = ['#26004a','#ff007f','#00eaff','#888'];
+    document.querySelectorAll('.value').forEach(animateCounter);
 
-const usersCtx = document.getElementById('usersChart').getContext('2d');
-new Chart(usersCtx,{
-  type:'line',
-  data:{labels:['12AM','4AM','8AM','12PM','4PM','8PM'],datasets:[{label:'Users Online',data:[12,19,8,17,22,14],borderColor:'#26004a',backgroundColor:'#26004a40',fill:true}]} ,
-  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-});
+    // Lightweight line chart (vanilla canvas) with animated draw
+    const lc = document.getElementById('lineChart');
+    const lctx = lc.getContext('2d');
+    let lineData = Array.from({length: 36}, (_,i)=> 60 + Math.sin(i/2)*20 + Math.random()*18);
 
-const serverCtx = document.getElementById('serverChart').getContext('2d');
-new Chart(serverCtx,{
-  type:'doughnut',
-  data:{labels:['CPU','Memory','Disk'],datasets:[{label:'Server Load',data:[55,30,15],backgroundColor:['#26004a','#ff007f','#00eaff']}]},
-  options:{responsive:true}
-});
+    function drawLineChart(progress=1) {
+      const { width, height } = lc.getBoundingClientRect();
+      lc.width = width * devicePixelRatio; lc.height = height * devicePixelRatio;
+      lctx.scale(devicePixelRatio, devicePixelRatio);
+      lctx.clearRect(0,0,width,height);
 
-const salesCtx = document.getElementById('salesChart').getContext('2d');
-new Chart(salesCtx,{
-  type:'bar',
-  data:{labels:['Jan','Feb','Mar','Apr','May'],datasets:[{label:'Sales',data:[120,190,300,250,400],backgroundColor:'#26004a'}]},
-  options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-});
+      // axes
+      lctx.globalAlpha = .6; lctx.strokeStyle = '#2b3570';
+      lctx.lineWidth = 1; lctx.beginPath();
+      for (let i=0;i<5;i++){ let y = (height-24) * (i/4) + 8; lctx.moveTo(28, y); lctx.lineTo(width-8, y) }
+      lctx.stroke();
 
-const alertsCtx = document.getElementById('alertsChart').getContext('2d');
-new Chart(alertsCtx,{
-  type:'polarArea',
-  data:{labels:['Critical','Warning','Info'],datasets:[{label:'Alerts',data:[5,12,8],backgroundColor:['#ff007f','#26004a','#00eaff']}]},
-  options:{responsive:true}
-});
-</script>
+      // line
+      const max = Math.max(...lineData)+10, min = Math.min(...lineData)-10;
+      const dx = (width-48) / (lineData.length-1);
+      lctx.beginPath();
+      lctx.moveTo(28, height-28 - (lineData[0]-min)/(max-min)*(height-56));
+      for (let i=1;i<lineData.length*progress;i++){
+        const y = height-28 - (lineData[i]-min)/(max-min)*(height-56);
+        lctx.lineTo(28 + dx*i, y);
+      }
+      // gradient stroke
+      const grad = lctx.createLinearGradient(0,0,width,0); grad.addColorStop(0,'#6ea8ff'); grad.addColorStop(1,'#8a7dff');
+      lctx.strokeStyle = grad; lctx.lineWidth = 2.4; lctx.globalAlpha = 1; lctx.stroke();
 
+      // fill
+      lctx.lineTo(width-8, height-28); lctx.lineTo(28, height-28); lctx.closePath();
+      const fgrad = lctx.createLinearGradient(0,0,0,height); fgrad.addColorStop(0,'rgba(110,168,255,.22)'); fgrad.addColorStop(1,'rgba(110,168,255,0)');
+      lctx.fillStyle = fgrad; lctx.fill();
+    }
+
+    // Initial animation
+    let start = null; function animate(ts){ if(!start) start = ts; const p = Math.min(1, (ts-start)/1200); drawLineChart(p); if(p<1) requestAnimationFrame(animate) }
+    requestAnimationFrame(animate);
+
+    // Simulate realtime updates every 2.5s
+    setInterval(()=>{
+      lineData.push(lineData.at(-1) + (Math.random()-.4)*10);
+      lineData = lineData.slice(-36);
+      drawLineChart(1);
+      pushFeed();
+    }, 2500);
+
+    // Simple bar chart
+    const bc = document.getElementById('barChart');
+    const bctx = bc.getContext('2d');
+    const bars = [
+      { label: 'Search', v: 68 },
+      { label: 'Social', v: 42 },
+      { label: 'Email', v: 54 },
+      { label: 'Referral', v: 36 },
+      { label: 'Direct', v: 71 },
+    ];
+
+    function drawBars(progress=1){
+      const { width, height } = bc.getBoundingClientRect(); bc.width = width*devicePixelRatio; bc.height = height*devicePixelRatio; bctx.scale(devicePixelRatio, devicePixelRatio);
+      bctx.clearRect(0,0,width,height);
+      const pad = 28; const innerW = width - pad*2; const bw = innerW / bars.length - 12;
+      // axis
+      bctx.globalAlpha = .6; bctx.strokeStyle = '#2b3570'; bctx.beginPath(); bctx.moveTo(pad, height-26); bctx.lineTo(width-8, height-26); bctx.stroke(); bctx.globalAlpha = 1;
+      bars.forEach((b, i)=>{
+        const x = pad + i*(bw+12);
+        const h = (height-60) * (b.v/100) * progress;
+        const y = height-26 - h;
+        const grad = bctx.createLinearGradient(0,y,0,y+h); grad.addColorStop(0,'#6ea8ff'); grad.addColorStop(1,'#8a7dff');
+        bctx.fillStyle = grad; bctx.fillRect(x, y, bw, h);
+        bctx.fillStyle = '#a7b0d6'; bctx.font = '12px system-ui'; bctx.fillText(b.label, x, height-10);
+      });
+    }
+
+    // animate bars in
+    let bs = null; function animateBars(ts){ if(!bs) bs = ts; const p = Math.min(1, (ts-bs)/900); drawBars(p); if(p<1) requestAnimationFrame(animateBars) }
+    requestAnimationFrame(animateBars);
+
+    // Activity feed generator
+    const feed = document.getElementById('feed');
+    const actions = [
+      'Synced BigQuery → Warehouse',
+      'Refreshed dashboard cache',
+      'Triggered ETL job',
+      'Deployed A/B experiment',
+      'Validated schema drift',
+      'Rolled up hourly metrics',
+      'Rebuilt aggregates',
+      'Exported CSV snapshot',
+      'Trained forecast model',
+      'Reindexed search tables'
+    ];
+
+    function pushFeed(){
+      const card = document.createElement('div');
+      card.style.cssText = 'border:1px solid #2b3570;border-radius:12px;padding:12px;background:#0e1533b3;backdrop-filter:blur(6px);min-height:54px;';
+      const when = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const text = actions[Math.floor(Math.random()*actions.length)];
+      card.innerHTML = `<div style="font-weight:700">${text}</div><div style="color:#a7b0d6;font-size:12px;margin-top:4px">${when}</div>`;
+      feed.prepend(card);
+      if (feed.children.length > 9) feed.lastChild.remove();
+    }
+
+    // Prime feed
+    for (let i=0;i<6;i++) pushFeed();
+
+    // Resize handling for crisp canvas
+    const ro = new ResizeObserver(()=>{ drawLineChart(1); drawBars(1); });
+    ro.observe(document.body);
+  </script>
 </body>
 </html>
